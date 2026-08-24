@@ -6,6 +6,8 @@
 ![Mongoose](https://img.shields.io/badge/Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 ![Nodemailer](https://img.shields.io/badge/Nodemailer-22B573?style=for-the-badge&logo=gmail&logoColor=white)
+![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
+![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
 A backend service that models how real banking ledgers work: account balances are never stored as a single mutable number — they're **derived from an immutable, append-only ledger of credit/debit entries**, and money transfers are processed as atomic, idempotent, multi-step transactions.
 
@@ -13,21 +15,36 @@ Built with **Node.js, Express, and MongoDB (Mongoose)**, with a lightweight vani
 
 ---
 
-## Live demo
+## 🔴 Live Demo
 
-A single-file HTML/JS client (`frontend/index.html`) is included to demo the API without needing Postman — register, open accounts, transfer funds, and watch a live "ledger tape" of debit/credit entries print as they happen. No build step, no framework, no mocked data — it talks directly to the deployed API.
+| | |
+|---|---|
+| **Frontend** | [bank-transaction-system-backend.vercel.app](https://bank-transaction-system-backend.vercel.app) |
+| **Backend API** | [bank-transaction-system-backend-1.onrender.com](https://bank-transaction-system-backend-1.onrender.com) |
+
+On first load, click **"API endpoint"** (top-right) and paste in the backend URL above, then click Connect — the frontend isn't hardcoded to a specific backend, so this is a one-time step per browser session.
+
+> **Note:** the backend is hosted on Render's free tier, which spins down after 15 minutes of inactivity. The first request after a period of idle time can take 30–60 seconds to wake up — this is expected, not a bug. Subsequent requests are fast.
+
+Register a user, open an account, and transfer funds against live MongoDB Atlas data — nothing on the live demo is mocked.
+
+---
+
+## Live demo client
+
+A single-file HTML/JS client (`frontend/index.html`) is included to demo the API without needing Postman — register, open accounts, transfer funds, and watch a live "ledger tape" of debit/credit entries print as they happen. No build step, no framework.
 
 <!-- Add screenshots here, e.g.: -->
 <!-- ![Login screen](./frontend/screenshots/login.png) -->
 <!-- ![Dashboard with accounts and transfer form](./frontend/screenshots/dashboard.png) -->
 <!-- ![Ledger tape showing a completed transfer](./frontend/screenshots/ledger-tape.png) -->
 
-**Running it locally:**
+**Running it locally instead:**
 ```bash
 cd frontend
 npx serve -l 5500
 ```
-Open `http://localhost:5500`, click "API endpoint," and point it at your running backend (`http://localhost:3000` for local, or your deployed URL). CORS is already enabled on the backend for this.
+Open `http://localhost:5500`, click "API endpoint," and point it at your running backend (`http://localhost:3000` for local, or the deployed URL above). CORS is already enabled on the backend for this.
 
 ---
 
@@ -54,6 +71,7 @@ Most "wallet" demo apps just do `balance += amount` on a user document. That bre
 | Auth | ![JWT](https://img.shields.io/badge/JWT-000000?logo=jsonwebtokens&logoColor=white) `bcryptjs` `httpOnly cookies` |
 | Email | ![Nodemailer](https://img.shields.io/badge/Nodemailer-22B573?logo=gmail&logoColor=white) (Gmail OAuth2) |
 | Frontend (demo client) | Vanilla HTML / CSS / JS — no framework, no build step |
+| Hosting | Render (API) · Vercel (frontend) |
 | Other | `dotenv` `cookie-parser` `cors` |
 
 ---
@@ -61,10 +79,10 @@ Most "wallet" demo apps just do `balance += amount` on a user document. That bre
 ## Architecture
 
 ```
-frontend/index.html (demo client)
+frontend/index.html (Vercel)
   │
   ▼
-Express App (src/app.js)  ── CORS-enabled
+Express App — src/app.js (Render)  ── CORS-enabled
   │
   ├── /api/auth          → register / login / logout (JWT issued, blacklisted on logout)
   ├── /api/accounts       → create account, list accounts, get derived balance
@@ -82,6 +100,9 @@ Express App (src/app.js)  ── CORS-enabled
             │
             ▼
    Account balance = Σ(CREDIT) − Σ(DEBIT)   (computed on read, never stored)
+            │
+            ▼
+      MongoDB Atlas
 ```
 
 ---
@@ -97,6 +118,8 @@ Express App (src/app.js)  ── CORS-enabled
 ---
 
 ## API Endpoints
+
+Base URL (deployed): `https://bank-transaction-system-backend-1.onrender.com`
 
 ### Auth
 | Method | Endpoint | Description |
@@ -151,7 +174,7 @@ If the same `idempotencyKey` is sent again, the API returns the original transac
 
 ---
 
-## Getting Started
+## Running it locally
 
 ### Prerequisites
 - Node.js (v18+)
@@ -193,11 +216,19 @@ Open `http://localhost:5500` and connect it to your backend's URL via the "API e
 
 ---
 
+## Deployment
+
+- **Backend** is deployed on [Render](https://render.com) as a Node web service (`npm install` build command, `node server.js` start command), with environment variables set directly in the Render dashboard. MongoDB Atlas has its Network Access set to allow connections from anywhere (`0.0.0.0/0`) since Render doesn't use a static IP.
+- **Frontend** is deployed on [Vercel](https://vercel.com) as a static site, with Root Directory set to `frontend` (it's a single `index.html`, no build step needed).
+
+---
+
 ## Possible Next Steps
 - Add transaction reversal endpoint (the `REVERSED` status is modeled but not yet wired up)
 - Add rate limiting on auth/transaction routes
 - Add automated tests (unit tests for balance aggregation, integration tests for the transfer flow)
 - Add pagination/filtering for transaction history per account
 - Add a `GET /api/transactions` endpoint for full account history (currently the frontend's ledger tape only reflects the current session's activity)
+- Hardcode/default the deployed backend URL in the frontend so first-time visitors don't need to manually enter it
 
 ---
