@@ -280,7 +280,7 @@
       <button class="btn-primary-sm" id="apiBaseSave">Connect</button>
     </div>
     <div class="config-note">
-      Point this at your deployed backend (no trailing slash). This demo talks to the real API — register a user, open an account, and transfer against your live MongoDB Atlas data. Nothing is mocked.
+      Point this at your deployed backend (no trailing slash). This demo talks to the real API - register a user, open an account, and transfer against your live MongoDB Atlas data. Nothing is mocked.
     </div>
   </div>
 
@@ -291,11 +291,11 @@
         <h1>Balances aren't stored.<br/>They're derived.</h1>
         <p>
           This client talks to a ledger service where every transfer writes an immutable
-          debit and credit entry. An account's balance is never a mutable field — it's
+          debit and credit entry. An account's balance is never a mutable field - it's
           computed on demand from the entries that produced it.
         </p>
         <ul class="pitch-list">
-          <li>Every transfer is atomic — it fully commits or fully rolls back.</li>
+          <li>Every transfer is atomic - it fully commits or fully rolls back.</li>
           <li>Idempotency keys mean a retried request never double-charges.</li>
           <li>Ledger entries are append-only and cannot be edited or deleted.</li>
         </ul>
@@ -352,7 +352,7 @@
           <button class="btn-mini" id="newAccountBtn">+ New account</button>
         </div>
         <div class="account-list" id="accountList">
-          <div class="empty-state">No accounts yet — open one to get a ledger-derived balance.</div>
+          <div class="empty-state">No accounts yet - open one to get a ledger-derived balance.</div>
         </div>
       </div>
 
@@ -385,7 +385,7 @@
           <button class="btn-submit" type="submit" id="transferSubmit">Send transfer</button>
           <div class="pending-banner" id="pendingBanner">
             <span class="spinner"></span>
-            <span>Processing — the debit and credit legs commit inside one MongoDB session, this can take a few seconds.</span>
+            <span>Processing - the debit and credit legs commit inside one MongoDB session, this can take a few seconds.</span>
           </div>
           <div class="form-msg" id="transferMsg"></div>
         </form>
