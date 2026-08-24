@@ -9,7 +9,25 @@
 
 A backend service that models how real banking ledgers work: account balances are never stored as a single mutable number — they're **derived from an immutable, append-only ledger of credit/debit entries**, and money transfers are processed as atomic, idempotent, multi-step transactions.
 
-Built with **Node.js, Express, and MongoDB (Mongoose)**.
+Built with **Node.js, Express, and MongoDB (Mongoose)**, with a lightweight vanilla-JS frontend client for demoing the API live.
+
+---
+
+## Live demo
+
+A single-file HTML/JS client (`frontend/index.html`) is included to demo the API without needing Postman — register, open accounts, transfer funds, and watch a live "ledger tape" of debit/credit entries print as they happen. No build step, no framework, no mocked data — it talks directly to the deployed API.
+
+<!-- Add screenshots here, e.g.: -->
+<!-- ![Login screen](./frontend/screenshots/login.png) -->
+<!-- ![Dashboard with accounts and transfer form](./frontend/screenshots/dashboard.png) -->
+<!-- ![Ledger tape showing a completed transfer](./frontend/screenshots/ledger-tape.png) -->
+
+**Running it locally:**
+```bash
+cd frontend
+npx serve -l 5500
+```
+Open `http://localhost:5500`, click "API endpoint," and point it at your running backend (`http://localhost:3000` for local, or your deployed URL). CORS is already enabled on the backend for this.
 
 ---
 
@@ -35,17 +53,18 @@ Most "wallet" demo apps just do `balance += amount` on a user document. That bre
 | Database | ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white) ![Mongoose](https://img.shields.io/badge/Mongoose-880000?logo=mongoose&logoColor=white) |
 | Auth | ![JWT](https://img.shields.io/badge/JWT-000000?logo=jsonwebtokens&logoColor=white) `bcryptjs` `httpOnly cookies` |
 | Email | ![Nodemailer](https://img.shields.io/badge/Nodemailer-22B573?logo=gmail&logoColor=white) (Gmail OAuth2) |
-| Other | `dotenv` `cookie-parser` |
+| Frontend (demo client) | Vanilla HTML / CSS / JS — no framework, no build step |
+| Other | `dotenv` `cookie-parser` `cors` |
 
 ---
 
 ## Architecture
 
 ```
-Client
+frontend/index.html (demo client)
   │
   ▼
-Express App (src/app.js)
+Express App (src/app.js)  ── CORS-enabled
   │
   ├── /api/auth          → register / login / logout (JWT issued, blacklisted on logout)
   ├── /api/accounts       → create account, list accounts, get derived balance
@@ -139,7 +158,7 @@ If the same `idempotencyKey` is sent again, the API returns the original transac
 - A MongoDB instance (local or Atlas)
 - Gmail account with OAuth2 credentials (for email notifications) — optional, app runs without it failing requests
 
-### Setup
+### Backend setup
 ```bash
 git clone https://github.com/thakur-027/bank-transaction-system-backend.git
 cd bank-transaction-system-backend
@@ -165,6 +184,13 @@ npm start
 
 Server runs on `http://localhost:3000`.
 
+### Frontend setup
+```bash
+cd frontend
+npx serve -l 5500
+```
+Open `http://localhost:5500` and connect it to your backend's URL via the "API endpoint" field in the top-right.
+
 ---
 
 ## Possible Next Steps
@@ -172,5 +198,6 @@ Server runs on `http://localhost:3000`.
 - Add rate limiting on auth/transaction routes
 - Add automated tests (unit tests for balance aggregation, integration tests for the transfer flow)
 - Add pagination/filtering for transaction history per account
+- Add a `GET /api/transactions` endpoint for full account history (currently the frontend's ledger tape only reflects the current session's activity)
 
 ---
